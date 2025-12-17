@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users collection: only admins can update role_id and approved fields
+    match /users/{userId} {
+      allow create: if request.auth != null && request.resource.data.email == request.auth.token.email;
+      allow read: if request.auth != null;
+      allow update: if isAdmin(request.auth.uid) || (request.auth.uid == userId && !('role_id' in request.resource.data));
+      allow delete: if isAdmin(request.auth.uid);
+    }
+
+    // Products: admin and manager can create/update/delete; all authenticated can read
+    match /products/{docId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if isAdmin(request.auth.uid) || isManager(request.auth.uid);
+    }
+
+    // Activity: only admin and managers can write; authenticated can read
+    match /activity/{docId} {
+      allow read: if request.auth != null;
+      allow create: if isAdmin(request.auth.uid) || isManager(request.auth.uid);
+    }
+
+    // Fallback deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isAdmin(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.role_id == 1;
+    }
+    function isManager(uid) {
+      let r = get(/databases/$(database)/documents/users/$(uid)).data.role_id;
+      return r == 2;
+    }
+  }
+}

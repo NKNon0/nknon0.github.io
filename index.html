@@ -4,68 +4,146 @@
   <meta charset="UTF-8">
   <title>ระบบจัดการคลังสินค้า</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #0d6efd;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    main {
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    footer {
-      text-align: center;
-      padding: 10px;
-      color: #666;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0f1720">
 </head>
 <body>
-
-<header>
-  <h1>ระบบจัดการคลังสินค้า</h1>
-  <p>เว็บโปรเจกต์นักศึกษา</p>
+<header class="topbar">
+  <div class="brand">ระบบจัดการคลังสินค้า</div>
+  <nav class="nav">
+    <span id="welcomeText">ยินดีต้อนรับ</span>
+    <button id="btn-login" class="btn small">ล็อกอิน</button>
+    <button id="btn-register" class="btn small ghost">สมัคร</button>
+    <button id="btn-logout" class="btn small" style="display:none">ออกจากระบบ</button>
+  </nav>
 </header>
 
-<main>
-  <div class="card">
-    <h3>📦 รับสินค้า</h3>
-    <p>บันทึกรายการรับสินค้าเข้าคลัง</p>
-  </div>
+<main class="container">
+  <aside class="sidebar">
+    <h3>เมนู</h3>
+    <ul>
+      <li><button class="menu-btn" data-show="home">หน้าหลัก</button></li>
+      <li><button class="menu-btn" data-show="products">จัดการสินค้า</button></li>
+      <li><button class="menu-btn" data-show="receive">รับสินค้า</button></li>
+      <li><button class="menu-btn" data-show="withdraw">เบิกสินค้า</button></li>
+      <li><button class="menu-btn" data-show="reports">รายงาน</button></li>
+      <li><button class="menu-btn" data-show="admin" id="adminMenu" style="display:none">Admin</button></li>
+      <li><button class="menu-btn" data-show="activity">บันทึกกิจกรรม</button></li>
+    </ul>
+  </aside>
 
-  <div class="card">
-    <h3>📤 เบิกสินค้า</h3>
-    <p>บันทึกรายการเบิกสินค้าออกจากคลัง</p>
-  </div>
+  <section class="content">
+    <section id="home" class="view">
+      <div class="panel">
+        <h2>สรุประบบคลังสินค้า</h2>
+        <ul class="feature-list">
+          <li>รับสินค้า</li>
+          <li>เบิกสินค้า</li>
+          <li>ติดตามจำนวน</li>
+          <li>เตือนสินค้าใกล้หมด</li>
+          <li>รายงาน และบันทึกในฐานข้อมูล</li>
+        </ul>
+      </div>
+    </section>
 
-  <div class="card">
-    <h3>📊 ติดตามจำนวน</h3>
-    <p>ตรวจสอบจำนวนสินค้าแบบเรียลไทม์</p>
-  </div>
+    <section id="products" class="view" style="display:none">
+      <div class="panel">
+        <h2>จัดการสินค้า</h2>
+        <div class="form-row">
+          <input id="product-name" placeholder="ชื่อสินค้า">
+          <input id="product-qty" placeholder="จำนวน" type="number">
+          <button id="add-product" class="btn">เพิ่ม</button>
+        </div>
+        <ul id="product-list" class="list"></ul>
+      </div>
+    </section>
 
-  <div class="card">
-    <h3>⚠️ เตือนสินค้าใกล้หมด</h3>
-    <p>แจ้งเตือนเมื่อสินค้าต่ำกว่าที่กำหนด</p>
-  </div>
+    <section id="receive" class="view" style="display:none">
+      <div class="panel">
+        <h2>รับสินค้า</h2>
+        <p>บันทึกรายการรับสินค้า (สำหรับ Staff/Manager)</p>
+      </div>
+    </section>
+
+    <section id="withdraw" class="view" style="display:none">
+      <div class="panel">
+        <h2>เบิกสินค้า</h2>
+      </div>
+    </section>
+
+    <section id="reports" class="view" style="display:none">
+      <div class="panel">
+        <h2>รายงาน</h2>
+      </div>
+    </section>
+
+    <section id="admin" class="view" style="display:none">
+      <div class="panel">
+        <h2>Admin - ผู้ใช้งาน</h2>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button id="showPending" class="btn small">ผู้ใช้งานรออนุมัติ</button>
+          <button id="showAllUsers" class="btn small ghost">ผู้ใช้งานทั้งหมด</button>
+        </div>
+        <div id="adminPendingView">
+          <ul id="pending-users" class="list"></ul>
+        </div>
+        <div id="adminAllView" style="display:none">
+          <ul id="all-users" class="list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="activity" class="view" style="display:none">
+      <div class="panel">
+        <h2>บันทึกกิจกรรม (Activity Log)</h2>
+        <ul id="activity-log" class="list"></ul>
+      </div>
+    </section>
+  </section>
 </main>
 
-<footer>
-  จัดทำโดย: นนท์
-</footer>
+<!-- Auth modal / forms -->
+<div id="authModal" class="modal" style="display:none">
+  <div class="modal-card">
+    <h3 id="authTitle">ล็อกอิน</h3>
+    <div id="authForms">
+      <div id="loginForm">
+        <input id="login-email" placeholder="อีเมล">
+        <input id="login-pass" placeholder="รหัสผ่าน" type="password">
+        <div class="form-actions">
+          <button id="do-login" class="btn">ล็อกอิน</button>
+        </div>
+      </div>
 
+      <div id="registerForm" style="display:none">
+        <input id="reg-name" placeholder="ชื่อ-สกุล">
+        <input id="reg-email" placeholder="อีเมล">
+        <input id="reg-pass" placeholder="รหัสผ่าน" type="password">
+        <label>ตำแหน่ง
+          <select id="reg-role">
+            <option value="3">Staff</option>
+            <option value="2">Manager</option>
+          </select>
+        </label>
+        <div class="form-actions">
+          <button id="do-register" class="btn">สมัคร</button>
+        </div>
+      </div>
+    </div>
+    <button id="authClose" class="btn ghost small">ปิด</button>
+  </div>
+</div>
+
+<footer class="footer">จัดทำโดย: นนท์ — ตัวอย่างระบบ (Prototype)</footer>
+
+</script>
+
+<!-- Firebase (optional): place your config in firebase-config.js (see firebase-config.example.js) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
